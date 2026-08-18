@@ -1,0 +1,31 @@
+services:
+  api:
+    build:
+      context: ./server
+    image: my-accounts-api:latest
+    container_name: my-accounts-api
+    restart: unless-stopped
+    env_file:
+      - ./server/.env.production
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - my_accounts_net
+
+  web:
+    build:
+      context: ./client
+      args:
+        VITE_API_URL: /api
+    image: my-accounts-web:latest
+    container_name: my-accounts-web
+    restart: unless-stopped
+    depends_on:
+      - api
+    ports:
+      - "7704:80"
+    networks:
+      - my_accounts_net
+
+networks:
+  my_accounts_net:
